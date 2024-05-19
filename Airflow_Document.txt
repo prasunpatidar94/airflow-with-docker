@@ -1,0 +1,114 @@
+Airflow:
+    1. open source 
+    2. appache software foundation 
+    3. use to manage the flow  exection of jos or task one by one.
+    4. manage to execution life system on bases of the DAG concept.
+    5. internal tool to manage  complex workflows 
+    6. populer workflows management platfrom
+    7. written in python 
+
+workflow:
+     * sequence of tasks
+     * names directed acyclic graph (DAG)
+     * execution flow in one direction
+     * 
+     workflow >> DAG >> tasks(a->b,c->d like)
+
+task:
+    * unit of work with in DAG
+    * resposible to run a specifis bussness logic or programs
+    * it will reperent as node in DAG which is written in python
+
+Operator:
+    * it will determined what need to done in the task 
+    * there are many types if operator which can help to perform opration in airflow 
+        BashOperator, PythonOperator .... customisedOperator etc. .
+    Task >> Operator >> 
+
+Excution Date:
+    * logical date 
+    * to represent the run of the DAG
+
+Task Instence:
+    * combination  of execution date and Operator in airfloe 
+    * exection date + Operator = Task Instence
+
+DAG Run:
+    * instancation of DAG and exection date 
+    * DAG + Excution date = DAG run 
+
+Task LifeCycle:
+    *  if is the process or way in which task will  change the status one by one according to it properties of requiremnets
+    * 10 types of status of task .
+    * queued | running | success | failed | up_for_retry | up_for_reschedule | upstream_failed | skipped  | scheduled | no_status
+
+    no_status >> scheduled >> queued >> running >> success >> upstream_failed >> up_for_reschedule >> up_for_retry >> failed >> scheduled
+
+    step 1> no_status:
+        scheduler created empty task Instence
+    step 2> scheduler >> (need to be run)   
+                        scheduled -> (ready to run need to run )
+                        removed -> (task will remove on some of the cases)
+                        upstream_failed -> (task's upstream taks is failed)
+                        skipped -> (task is skipped due to give condition of logic)
+    step 3> Executor>>  (it will take the tsk and put it into queue and  assine the status queued)
+                        -> queued (set in queue)
+                            ->worker (task will pickuped by free or less load worker to run it in DAG)
+                                ->running (status > task is running)
+                                            ->up_for_reschedule (running to up_for_reschedule and it will send it to executor )
+                                    -> success (ran without any issue)
+                                    -> failed (fail due to issues)
+                                            -> up_for_retry (if task retry count not exced   still chance to retry and run  and reset the status scheduled)
+                                    -> shutdown ( task has beed anorted by menualy or programaticaly)
+                                            
+a Happy flow:
+    no_status >> scheduler* >> scheduled >> executor* >> running >> success
+
+    Prefet the  screen shot of the dig..
+     file name :
+        taks _life_cycle_dig.png
+        happy_path_flow_lifecycle_of_task.png 
+
+    screen sort :
+    basic_architecture_of_airflow.png
+
+---------------------------------------------------------------------------------
+dag creation  activity :
+if you need to pass more then one output puch form one task to another task
+ the use this key in @task decoretor 
+@task(multipal_outputs=True)
+otherwise @task()  
+
+--------------------------------------------------------------------------------
+Airflow  CatchUp :
+ if you need  run  preveius dated form startdate the 
+ CatchUp = True 
+ else
+ CatchUp = False (defalt value) 
+
+Airflow Backfill:
+ in  this we can  run the job with commain form inside container 
+by Backfill coomand 
+process :
+ $docker continer list
+ fins the airflow scheduler list <continer id >
+ $docker exec -it <container id> bash   (to go inside the container system )
+ $airflow dags backfill -s <start date in YYYY-MM-DD> -e <end date in YYYY-MM-DD> <dag id for airflow>
+
+ Note : this feature is veray usefull for job run of previous dates 
+
+ -----------------------------------------------------------------------------------
+ Scheduler with Cron Expression:
+basicaly there are two  ways to schedule the jobs in airflow :
+1. dateTime 
+2. cron Expresstion (* * * * * )  -> 5 start 
+
+(* * * * * )
+(m h d M D)
+
+minutes hours <day of month> month <date of week>
+------------------------------------------------------------------------------------------
+
+Airflow Connection with Database:
+
+
